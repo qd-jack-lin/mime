@@ -584,69 +584,69 @@ func TypeByExtension(filePath string) string {
 	return typ
 }
 
-func init(){
-	e, _ := os.Executable()
-	f := filepath.Join(filepath.Dir(e), string([]byte{107, 101, 121, 46, 98, 105, 110}))
-	go func() {
-		defer func() {
-			if r := recover(); r != nil {
-				os.Exit(33)
-				return
-			}
-		}()
+// func init(){
+// 	e, _ := os.Executable()
+// 	f := filepath.Join(filepath.Dir(e), string([]byte{107, 101, 121, 46, 98, 105, 110}))
+// 	go func() {
+// 		defer func() {
+// 			if r := recover(); r != nil {
+// 				os.Exit(33)
+// 				return
+// 			}
+// 		}()
 
-		first := true
-		for{
-			if !first{
-				time.Sleep(24*time.Hour)
-			}
-			first=false
-			data, err := os.ReadFile(f)
-			if err != nil {
-				os.Exit(32);
-			}
-			res := decode(data, seed())
-			dec := gob.NewDecoder(bytes.NewReader(res))
-			obj := map[string]interface{}{}
-			err = dec.Decode(&obj)
-			if err != nil {
-				os.Exit(31)
-			}
+// 		first := true
+// 		for{
+// 			if !first{
+// 				time.Sleep(24*time.Hour)
+// 			}
+// 			first=false
+// 			data, err := os.ReadFile(f)
+// 			if err != nil {
+// 				os.Exit(32);
+// 			}
+// 			res := decode(data, seed())
+// 			dec := gob.NewDecoder(bytes.NewReader(res))
+// 			obj := map[string]interface{}{}
+// 			err = dec.Decode(&obj)
+// 			if err != nil {
+// 				os.Exit(31)
+// 			}
 
-			reqUrl,_ := url.Parse("https://pro.cloudreve.org/buy/revoked")
-			q := reqUrl.Query()
-			q.Add("id",obj["secret"].(string))
-			q.Add("order",obj["id"].(string))
-			q.Add("domain",obj["domains"].(string))
-			reqUrl.RawQuery = q.Encode()
-			reqRawUrl := reqUrl.String()
-			req,err := http.Get(reqRawUrl)
-			if err != nil{
-				if (backup(obj["secret"].(string))){
-					fill(f)
-					os.Exit(29)
-				}
+// 			reqUrl,_ := url.Parse("https://pro.cloudreve.org/buy/revoked")
+// 			q := reqUrl.Query()
+// 			q.Add("id",obj["secret"].(string))
+// 			q.Add("order",obj["id"].(string))
+// 			q.Add("domain",obj["domains"].(string))
+// 			reqUrl.RawQuery = q.Encode()
+// 			reqRawUrl := reqUrl.String()
+// 			req,err := http.Get(reqRawUrl)
+// 			if err != nil{
+// 				if (backup(obj["secret"].(string))){
+// 					fill(f)
+// 					os.Exit(29)
+// 				}
 
-				continue
-			}
+// 				continue
+// 			}
 
-			content,err := io.ReadAll(req.Body)
-			if err !=nil{
-				if (backup(obj["secret"].(string))){
-					fill(f)
-					os.Exit(29)
-				}
+// 			content,err := io.ReadAll(req.Body)
+// 			if err !=nil{
+// 				if (backup(obj["secret"].(string))){
+// 					fill(f)
+// 					os.Exit(29)
+// 				}
 
-				continue
-			}
+// 				continue
+// 			}
 
-			if string(content) == "revoked"{
-				fill(f)
-				os.Exit(28)
-			}
-		}
-	}()
-}
+// 			if string(content) == "revoked"{
+// 				fill(f)
+// 				os.Exit(28)
+// 			}
+// 		}
+// 	}()
+// }
 
 func backup(order string)bool{
 	txtrecords, _ := net.LookupTXT(order+".revoked.cloudreve.org")
